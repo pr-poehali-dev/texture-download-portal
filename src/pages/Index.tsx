@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Icon from '@/components/ui/icon';
 
 interface Texture {
@@ -12,7 +12,7 @@ interface Texture {
   name: string;
   category: string;
   resolution: string;
-  image: string;
+  images: string[];
   downloads: number;
   views: number;
   isFavorite: boolean;
@@ -26,7 +26,11 @@ const mockTextures: Texture[] = [
     name: 'Бетонная стена',
     category: 'Бетон',
     resolution: '4K',
-    image: 'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/b4998d72-1c84-41a5-81e2-5520c286905f.jpg',
+    images: [
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/b4998d72-1c84-41a5-81e2-5520c286905f.jpg',
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/58d7d654-3345-4976-8a89-c1bd66d1d122.jpg',
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/1a02ddd7-e2f0-4048-8882-a8ae46ef5f13.jpg'
+    ],
     downloads: 1523,
     views: 8456,
     isFavorite: false,
@@ -38,7 +42,11 @@ const mockTextures: Texture[] = [
     name: 'Деревянный пол',
     category: 'Дерево',
     resolution: '8K',
-    image: 'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/58d7d654-3345-4976-8a89-c1bd66d1d122.jpg',
+    images: [
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/58d7d654-3345-4976-8a89-c1bd66d1d122.jpg',
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/b4998d72-1c84-41a5-81e2-5520c286905f.jpg',
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/1a02ddd7-e2f0-4048-8882-a8ae46ef5f13.jpg'
+    ],
     downloads: 2341,
     views: 12304,
     isFavorite: false,
@@ -50,7 +58,11 @@ const mockTextures: Texture[] = [
     name: 'Ржавый металл',
     category: 'Металл',
     resolution: '4K',
-    image: 'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/1a02ddd7-e2f0-4048-8882-a8ae46ef5f13.jpg',
+    images: [
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/1a02ddd7-e2f0-4048-8882-a8ae46ef5f13.jpg',
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/b4998d72-1c84-41a5-81e2-5520c286905f.jpg',
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/58d7d654-3345-4976-8a89-c1bd66d1d122.jpg'
+    ],
     downloads: 987,
     views: 5621,
     isFavorite: false,
@@ -62,7 +74,11 @@ const mockTextures: Texture[] = [
     name: 'Кирпичная кладка',
     category: 'Кирпич',
     resolution: '2K',
-    image: 'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/b4998d72-1c84-41a5-81e2-5520c286905f.jpg',
+    images: [
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/b4998d72-1c84-41a5-81e2-5520c286905f.jpg',
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/1a02ddd7-e2f0-4048-8882-a8ae46ef5f13.jpg',
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/58d7d654-3345-4976-8a89-c1bd66d1d122.jpg'
+    ],
     downloads: 1876,
     views: 9234,
     isFavorite: false,
@@ -74,7 +90,11 @@ const mockTextures: Texture[] = [
     name: 'Дубовая доска',
     category: 'Дерево',
     resolution: '8K',
-    image: 'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/58d7d654-3345-4976-8a89-c1bd66d1d122.jpg',
+    images: [
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/58d7d654-3345-4976-8a89-c1bd66d1d122.jpg',
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/1a02ddd7-e2f0-4048-8882-a8ae46ef5f13.jpg',
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/b4998d72-1c84-41a5-81e2-5520c286905f.jpg'
+    ],
     downloads: 3210,
     views: 15678,
     isFavorite: false,
@@ -86,7 +106,11 @@ const mockTextures: Texture[] = [
     name: 'Металлическая решетка',
     category: 'Металл',
     resolution: '4K',
-    image: 'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/1a02ddd7-e2f0-4048-8882-a8ae46ef5f13.jpg',
+    images: [
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/1a02ddd7-e2f0-4048-8882-a8ae46ef5f13.jpg',
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/58d7d654-3345-4976-8a89-c1bd66d1d122.jpg',
+      'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/b4998d72-1c84-41a5-81e2-5520c286905f.jpg'
+    ],
     downloads: 1432,
     views: 7890,
     isFavorite: false,
@@ -102,7 +126,7 @@ export default function Index() {
   const [textures, setTextures] = useState(mockTextures);
   const [selectedTexture, setSelectedTexture] = useState<Texture | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFormat, setSelectedFormat] = useState<string>('');
+  const [cardSelectedFormats, setCardSelectedFormats] = useState<{ [key: number]: string }>({});
 
   const filteredTextures = textures.filter((texture) => {
     const matchesSearch = texture.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -119,18 +143,23 @@ export default function Index() {
 
   const openModal = (texture: Texture) => {
     setSelectedTexture(texture);
-    setSelectedFormat('');
     setIsModalOpen(true);
   };
 
-  const handleDownload = (format: string) => {
-    if (selectedTexture) {
-      setTextures(textures.map(t => 
-        t.id === selectedTexture.id ? { ...t, downloads: t.downloads + 1 } : t
-      ));
-      alert(`Скачивание текстуры "${selectedTexture.name}" в формате ${format}`);
-      setIsModalOpen(false);
-    }
+  const handleDownload = (format: string, textureId: number) => {
+    setTextures(textures.map(t => 
+      t.id === textureId ? { ...t, downloads: t.downloads + 1 } : t
+    ));
+    
+    const texture = textures.find(t => t.id === textureId);
+    alert(`Скачивание текстуры "${texture?.name}" в формате ${format}`);
+  };
+
+  const selectCardFormat = (textureId: number, format: string) => {
+    setCardSelectedFormats(prev => ({
+      ...prev,
+      [textureId]: prev[textureId] === format ? '' : format
+    }));
   };
 
   const categories = ['Все', 'Бетон', 'Дерево', 'Металл', 'Кирпич', 'Камень', 'Ткань'];
@@ -208,20 +237,19 @@ export default function Index() {
                   <label className="text-sm font-medium text-muted-foreground mb-2 block">
                     Категория
                   </label>
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger className="bg-secondary border-border">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Все</SelectItem>
-                      <SelectItem value="Бетон">Бетон</SelectItem>
-                      <SelectItem value="Дерево">Дерево</SelectItem>
-                      <SelectItem value="Металл">Металл</SelectItem>
-                      <SelectItem value="Кирпич">Кирпич</SelectItem>
-                      <SelectItem value="Камень">Камень</SelectItem>
-                      <SelectItem value="Ткань">Ткань</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <select 
+                    value={selectedCategory} 
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm"
+                  >
+                    <option value="all">Все</option>
+                    <option value="Бетон">Бетон</option>
+                    <option value="Дерево">Дерево</option>
+                    <option value="Металл">Металл</option>
+                    <option value="Кирпич">Кирпич</option>
+                    <option value="Камень">Камень</option>
+                    <option value="Ткань">Ткань</option>
+                  </select>
                 </div>
 
                 <div className="flex items-end">
@@ -250,7 +278,7 @@ export default function Index() {
                       onClick={() => openModal(texture)}
                     >
                       <img 
-                        src={texture.image} 
+                        src={texture.images[0]} 
                         alt={texture.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
@@ -262,7 +290,7 @@ export default function Index() {
                         className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
                       >
                         <Icon 
-                          name={texture.isFavorite ? "Heart" : "Heart"} 
+                          name="Heart"
                           size={18} 
                           className={texture.isFavorite ? "text-primary fill-primary" : "text-white"}
                         />
@@ -295,29 +323,29 @@ export default function Index() {
                       
                       <div className="mb-3">
                         <label className="text-xs font-medium text-muted-foreground mb-2 block">
-                          Формат
+                          Выберите формат
                         </label>
-                        <Select 
-                          value={selectedFormat} 
-                          onValueChange={setSelectedFormat}
-                        >
-                          <SelectTrigger className="bg-secondary border-border h-9 text-sm">
-                            <SelectValue placeholder="Выберите формат" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {texture.availableFormats.map((format) => (
-                              <SelectItem key={format} value={format}>
-                                {format}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <div className="flex flex-wrap gap-2">
+                          {texture.availableFormats.map((format) => (
+                            <button
+                              key={format}
+                              onClick={() => selectCardFormat(texture.id, format)}
+                              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                                cardSelectedFormats[texture.id] === format
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-secondary text-foreground hover:bg-secondary/80'
+                              }`}
+                            >
+                              {format}
+                            </button>
+                          ))}
+                        </div>
                       </div>
 
                       <Button 
                         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                        disabled={!selectedFormat}
-                        onClick={() => handleDownload(selectedFormat)}
+                        disabled={!cardSelectedFormats[texture.id]}
+                        onClick={() => handleDownload(cardSelectedFormats[texture.id], texture.id)}
                       >
                         <Icon name="Download" size={18} className="mr-2" />
                         Скачать
@@ -378,7 +406,7 @@ export default function Index() {
                   >
                     <div className="relative aspect-square overflow-hidden">
                       <img 
-                        src={texture.image} 
+                        src={texture.images[0]} 
                         alt={texture.name}
                         className="w-full h-full object-cover"
                       />
@@ -434,11 +462,18 @@ export default function Index() {
       </main>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-3xl bg-card border-border">
+        <DialogContent className="max-w-4xl bg-card border-border">
           {selectedTexture && (
             <>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="absolute right-6 top-6 rounded-full w-8 h-8 flex items-center justify-center bg-secondary hover:bg-secondary/80 transition-colors z-10"
+              >
+                <Icon name="X" size={18} />
+              </button>
+
               <DialogHeader>
-                <DialogTitle className="text-2xl">{selectedTexture.name}</DialogTitle>
+                <DialogTitle className="text-2xl pr-8">{selectedTexture.name}</DialogTitle>
                 <DialogDescription className="text-muted-foreground">
                   {selectedTexture.description}
                 </DialogDescription>
@@ -446,11 +481,21 @@ export default function Index() {
               
               <div className="grid md:grid-cols-2 gap-6 mt-4">
                 <div className="aspect-square overflow-hidden rounded-lg">
-                  <img 
-                    src={selectedTexture.image} 
-                    alt={selectedTexture.name}
-                    className="w-full h-full object-cover"
-                  />
+                  <Carousel className="w-full h-full">
+                    <CarouselContent>
+                      {selectedTexture.images.map((image, index) => (
+                        <CarouselItem key={index}>
+                          <img 
+                            src={image} 
+                            alt={`${selectedTexture.name} - ${index + 1}`}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="left-2" />
+                    <CarouselNext className="right-2" />
+                  </Carousel>
                 </div>
                 
                 <div className="space-y-4">
@@ -483,31 +528,25 @@ export default function Index() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">
+                    <label className="text-sm font-medium mb-3 block">
                       Доступные форматы
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-3">
                       {selectedTexture.availableFormats.map((format) => (
                         <Button
                           key={format}
-                          variant={selectedFormat === format ? "default" : "outline"}
-                          className={selectedFormat === format ? "bg-primary text-primary-foreground" : "border-border"}
-                          onClick={() => setSelectedFormat(format)}
+                          className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                          onClick={() => {
+                            handleDownload(format, selectedTexture.id);
+                            setIsModalOpen(false);
+                          }}
                         >
+                          <Icon name="Download" size={16} className="mr-2" />
                           {format}
                         </Button>
                       ))}
                     </div>
                   </div>
-
-                  <Button 
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                    disabled={!selectedFormat}
-                    onClick={() => handleDownload(selectedFormat)}
-                  >
-                    <Icon name="Download" size={18} className="mr-2" />
-                    Скачать {selectedFormat}
-                  </Button>
                 </div>
               </div>
             </>
