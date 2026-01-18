@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 
 interface Texture {
@@ -11,11 +12,12 @@ interface Texture {
   name: string;
   category: string;
   resolution: string;
-  format: string;
-  type: string;
   image: string;
   downloads: number;
+  views: number;
   isFavorite: boolean;
+  availableFormats: string[];
+  description: string;
 }
 
 const mockTextures: Texture[] = [
@@ -24,90 +26,111 @@ const mockTextures: Texture[] = [
     name: 'Бетонная стена',
     category: 'Бетон',
     resolution: '4K',
-    format: 'PNG',
-    type: 'PBR',
     image: 'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/b4998d72-1c84-41a5-81e2-5520c286905f.jpg',
     downloads: 1523,
+    views: 8456,
     isFavorite: false,
+    availableFormats: ['Unity', 'Unreal Engine', 'Blender', 'PBR'],
+    description: 'Высококачественная текстура бетонной стены с реалистичными деталями поверхности, трещинами и шероховатостями.',
   },
   {
     id: 2,
     name: 'Деревянный пол',
     category: 'Дерево',
     resolution: '8K',
-    format: 'JPG',
-    type: 'Seamless',
     image: 'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/58d7d654-3345-4976-8a89-c1bd66d1d122.jpg',
     downloads: 2341,
+    views: 12304,
     isFavorite: false,
+    availableFormats: ['Unity', 'Unreal Engine', 'Blender', 'PBR'],
+    description: 'Натуральная текстура деревянных досок с детализированной структурой волокон древесины.',
   },
   {
     id: 3,
     name: 'Ржавый металл',
     category: 'Металл',
     resolution: '4K',
-    format: 'PSD',
-    type: 'PBR',
     image: 'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/1a02ddd7-e2f0-4048-8882-a8ae46ef5f13.jpg',
     downloads: 987,
+    views: 5621,
     isFavorite: false,
+    availableFormats: ['Unity', 'Unreal Engine', 'Blender', 'PBR'],
+    description: 'Металлическая поверхность с царапинами и следами окисления для индустриальных проектов.',
   },
   {
     id: 4,
     name: 'Кирпичная кладка',
     category: 'Кирпич',
     resolution: '2K',
-    format: 'PNG',
-    type: 'Seamless',
     image: 'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/b4998d72-1c84-41a5-81e2-5520c286905f.jpg',
     downloads: 1876,
+    views: 9234,
     isFavorite: false,
+    availableFormats: ['Unity', 'Unreal Engine', 'Blender', 'PBR'],
+    description: 'Бесшовная текстура кирпичной стены с реалистичными швами и текстурой кирпича.',
   },
   {
     id: 5,
     name: 'Дубовая доска',
     category: 'Дерево',
     resolution: '8K',
-    format: 'JPG',
-    type: 'PBR',
     image: 'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/58d7d654-3345-4976-8a89-c1bd66d1d122.jpg',
     downloads: 3210,
+    views: 15678,
     isFavorite: false,
+    availableFormats: ['Unity', 'Unreal Engine', 'Blender', 'PBR'],
+    description: 'Премиальная текстура дубовой доски с высокой детализацией для архитектурной визуализации.',
   },
   {
     id: 6,
     name: 'Металлическая решетка',
     category: 'Металл',
     resolution: '4K',
-    format: 'PNG',
-    type: 'Seamless',
     image: 'https://cdn.poehali.dev/projects/8fc2e125-6ed3-4219-bb75-d60ba0170249/files/1a02ddd7-e2f0-4048-8882-a8ae46ef5f13.jpg',
     downloads: 1432,
+    views: 7890,
     isFavorite: false,
+    availableFormats: ['Unity', 'Unreal Engine', 'Blender', 'PBR'],
+    description: 'Текстура металлической решетки с бесшовным паттерном для промышленных сцен.',
   },
 ];
 
 export default function Index() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedResolution, setSelectedResolution] = useState('all');
-  const [selectedFormat, setSelectedFormat] = useState('all');
-  const [selectedType, setSelectedType] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [activeSection, setActiveSection] = useState('catalog');
   const [textures, setTextures] = useState(mockTextures);
+  const [selectedTexture, setSelectedTexture] = useState<Texture | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState<string>('');
 
   const filteredTextures = textures.filter((texture) => {
     const matchesSearch = texture.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesResolution = selectedResolution === 'all' || texture.resolution === selectedResolution;
-    const matchesFormat = selectedFormat === 'all' || texture.format === selectedFormat;
-    const matchesType = selectedType === 'all' || texture.type === selectedType;
+    const matchesCategory = selectedCategory === 'all' || texture.category === selectedCategory;
     
-    return matchesSearch && matchesResolution && matchesFormat && matchesType;
+    return matchesSearch && matchesCategory;
   });
 
   const toggleFavorite = (id: number) => {
     setTextures(textures.map(t => 
       t.id === id ? { ...t, isFavorite: !t.isFavorite } : t
     ));
+  };
+
+  const openModal = (texture: Texture) => {
+    setSelectedTexture(texture);
+    setSelectedFormat('');
+    setIsModalOpen(true);
+  };
+
+  const handleDownload = (format: string) => {
+    if (selectedTexture) {
+      setTextures(textures.map(t => 
+        t.id === selectedTexture.id ? { ...t, downloads: t.downloads + 1 } : t
+      ));
+      alert(`Скачивание текстуры "${selectedTexture.name}" в формате ${format}`);
+      setIsModalOpen(false);
+    }
   };
 
   const categories = ['Все', 'Бетон', 'Дерево', 'Металл', 'Кирпич', 'Камень', 'Ткань'];
@@ -183,50 +206,20 @@ export default function Index() {
               <div className="flex flex-col lg:flex-row gap-4 mb-6">
                 <div className="flex-1">
                   <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                    Разрешение
+                    Категория
                   </label>
-                  <Select value={selectedResolution} onValueChange={setSelectedResolution}>
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                     <SelectTrigger className="bg-secondary border-border">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Все</SelectItem>
-                      <SelectItem value="2K">2K</SelectItem>
-                      <SelectItem value="4K">4K</SelectItem>
-                      <SelectItem value="8K">8K</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex-1">
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                    Формат
-                  </label>
-                  <Select value={selectedFormat} onValueChange={setSelectedFormat}>
-                    <SelectTrigger className="bg-secondary border-border">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Все</SelectItem>
-                      <SelectItem value="PNG">PNG</SelectItem>
-                      <SelectItem value="JPG">JPG</SelectItem>
-                      <SelectItem value="PSD">PSD</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex-1">
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                    Тип текстуры
-                  </label>
-                  <Select value={selectedType} onValueChange={setSelectedType}>
-                    <SelectTrigger className="bg-secondary border-border">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Все</SelectItem>
-                      <SelectItem value="PBR">PBR</SelectItem>
-                      <SelectItem value="Seamless">Seamless</SelectItem>
+                      <SelectItem value="Бетон">Бетон</SelectItem>
+                      <SelectItem value="Дерево">Дерево</SelectItem>
+                      <SelectItem value="Металл">Металл</SelectItem>
+                      <SelectItem value="Кирпич">Кирпич</SelectItem>
+                      <SelectItem value="Камень">Камень</SelectItem>
+                      <SelectItem value="Ткань">Ткань</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -235,9 +228,8 @@ export default function Index() {
                   <Button 
                     variant="outline" 
                     onClick={() => {
-                      setSelectedResolution('all');
-                      setSelectedFormat('all');
-                      setSelectedType('all');
+                      setSelectedCategory('all');
+                      setSearchQuery('');
                     }}
                     className="border-border hover:bg-secondary"
                   >
@@ -253,14 +245,20 @@ export default function Index() {
                     key={texture.id} 
                     className="bg-card border-border overflow-hidden group hover:border-primary/50 transition-all duration-300"
                   >
-                    <div className="relative aspect-square overflow-hidden">
+                    <div 
+                      className="relative aspect-square overflow-hidden cursor-pointer"
+                      onClick={() => openModal(texture)}
+                    >
                       <img 
                         src={texture.image} 
                         alt={texture.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                       <button
-                        onClick={() => toggleFavorite(texture.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(texture.id);
+                        }}
                         className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
                       >
                         <Icon 
@@ -283,20 +281,44 @@ export default function Index() {
                           <Icon name="Tag" size={14} />
                           {texture.category}
                         </span>
-                        <span className="flex items-center gap-1">
-                          <Icon name="Download" size={14} />
-                          {texture.downloads}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <span className="flex items-center gap-1">
+                            <Icon name="Eye" size={14} />
+                            {texture.views}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Icon name="Download" size={14} />
+                            {texture.downloads}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex gap-2 mb-3">
-                        <Badge variant="outline" className="text-xs border-border">
-                          {texture.format}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs border-border">
-                          {texture.type}
-                        </Badge>
+                      
+                      <div className="mb-3">
+                        <label className="text-xs font-medium text-muted-foreground mb-2 block">
+                          Формат
+                        </label>
+                        <Select 
+                          value={selectedFormat} 
+                          onValueChange={setSelectedFormat}
+                        >
+                          <SelectTrigger className="bg-secondary border-border h-9 text-sm">
+                            <SelectValue placeholder="Выберите формат" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {texture.availableFormats.map((format) => (
+                              <SelectItem key={format} value={format}>
+                                {format}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+
+                      <Button 
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                        disabled={!selectedFormat}
+                        onClick={() => handleDownload(selectedFormat)}
+                      >
                         <Icon name="Download" size={18} className="mr-2" />
                         Скачать
                       </Button>
@@ -319,10 +341,14 @@ export default function Index() {
           <section className="py-8">
             <h2 className="text-3xl font-bold mb-8">Категории текстур</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {categories.map((category) => (
+              {categories.filter(c => c !== 'Все').map((category) => (
                 <Card 
                   key={category} 
                   className="bg-card border-border hover:border-primary/50 transition-all cursor-pointer group"
+                  onClick={() => {
+                    setSelectedCategory(category);
+                    setActiveSection('catalog');
+                  }}
                 >
                   <CardContent className="p-6 text-center">
                     <Icon name="FolderOpen" size={32} className="mx-auto mb-3 text-primary group-hover:scale-110 transition-transform" />
@@ -347,7 +373,8 @@ export default function Index() {
                 {textures.filter(t => t.isFavorite).map((texture) => (
                   <Card 
                     key={texture.id} 
-                    className="bg-card border-border overflow-hidden"
+                    className="bg-card border-border overflow-hidden cursor-pointer"
+                    onClick={() => openModal(texture)}
                   >
                     <div className="relative aspect-square overflow-hidden">
                       <img 
@@ -374,7 +401,7 @@ export default function Index() {
                 TextureHub — это библиотека высококачественных текстур для 3D-моделирования и визуализации.
               </p>
               <p className="text-muted-foreground mb-4">
-                Мы предлагаем широкий выбор текстур в различных разрешениях и форматах, включая PBR-материалы и seamless паттерны.
+                Мы предлагаем широкий выбор текстур в различных разрешениях и форматах для Unity, Unreal Engine, Blender и PBR-материалов.
               </p>
               <p className="text-muted-foreground">
                 Все текстуры тщательно отобраны и оптимизированы для профессионального использования в 3D-проектах.
@@ -405,6 +432,88 @@ export default function Index() {
           </section>
         )}
       </main>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-3xl bg-card border-border">
+          {selectedTexture && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl">{selectedTexture.name}</DialogTitle>
+                <DialogDescription className="text-muted-foreground">
+                  {selectedTexture.description}
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="grid md:grid-cols-2 gap-6 mt-4">
+                <div className="aspect-square overflow-hidden rounded-lg">
+                  <img 
+                    src={selectedTexture.image} 
+                    alt={selectedTexture.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-secondary rounded-lg p-4">
+                      <p className="text-sm text-muted-foreground mb-1">Разрешение</p>
+                      <p className="text-lg font-semibold text-primary">{selectedTexture.resolution}</p>
+                    </div>
+                    <div className="bg-secondary rounded-lg p-4">
+                      <p className="text-sm text-muted-foreground mb-1">Категория</p>
+                      <p className="text-lg font-semibold">{selectedTexture.category}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-secondary rounded-lg p-4">
+                      <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                        <Icon name="Eye" size={16} />
+                        <p className="text-sm">Просмотры</p>
+                      </div>
+                      <p className="text-lg font-semibold">{selectedTexture.views}</p>
+                    </div>
+                    <div className="bg-secondary rounded-lg p-4">
+                      <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                        <Icon name="Download" size={16} />
+                        <p className="text-sm">Скачивания</p>
+                      </div>
+                      <p className="text-lg font-semibold">{selectedTexture.downloads}</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      Доступные форматы
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {selectedTexture.availableFormats.map((format) => (
+                        <Button
+                          key={format}
+                          variant={selectedFormat === format ? "default" : "outline"}
+                          className={selectedFormat === format ? "bg-primary text-primary-foreground" : "border-border"}
+                          onClick={() => setSelectedFormat(format)}
+                        >
+                          {format}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                    disabled={!selectedFormat}
+                    onClick={() => handleDownload(selectedFormat)}
+                  >
+                    <Icon name="Download" size={18} className="mr-2" />
+                    Скачать {selectedFormat}
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <footer className="border-t border-border mt-16">
         <div className="container mx-auto px-4 py-8">
